@@ -15,11 +15,18 @@ public class Player : MonoBehaviour
     public int numberOfBombs = 3;
     public float bombSpacing = 0.33f;
 
+    public float inDistance = 0.8f;
+    Vector2[] cornerArray = { new Vector2(-1, 1).normalized,
+                                    new Vector2(1, 1).normalized,
+                                    new Vector2(-1, -1).normalized,
+                                    new Vector2(1, -1).normalized };
+
     // Update is called once per frame
     void Update()
     {
         TryToSpawnBomb(bombOffset);
         TryToSpawnBombTrail(bombSpacing, numberOfBombs);
+        TryToSpawnBombOnRandomCorner(inDistance);
         TryToWarp();
     }
 
@@ -90,5 +97,19 @@ public class Player : MonoBehaviour
             // Increase distance for each successive bomb placement
             localPos += -(Vector2) transform.up * bombSpacing;
         }
+    }
+
+    void TryToSpawnBombOnRandomCorner(float inDistance)
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            SpawnBombOnRandomCorner(inDistance);
+        }
+    }
+
+    void SpawnBombOnRandomCorner(float inDistance)
+    {
+        int res = Random.Range(0, 4);
+        SpawnBombAtOffset(inDistance * cornerArray[res]);
     }
 }
