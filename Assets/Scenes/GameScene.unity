@@ -334,6 +334,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f4b61241229c2d47a23bae1845ec497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform: {fileID: 1063494576}
+  enemyTransform: {fileID: 1441953408}
 --- !u!4 &384745472
 Transform:
   m_ObjectHideFlags: 0
@@ -518,6 +520,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3900e4d87ee29c43ad1d9098b51432c, type: 3}
+--- !u!4 &1063494576 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4408196811525658, guid: abc125f00ae369940b2c5c0275186637, type: 3}
+  m_PrefabInstance: {fileID: 2030902519}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1220048545
 PrefabInstance:
   m_ObjectHideFlags: 0

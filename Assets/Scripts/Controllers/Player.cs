@@ -9,11 +9,30 @@ public class Player : MonoBehaviour
     public List<Transform> asteroidTransforms;
 
     [SerializeField] bool waitToSpawnBombs = false;
-    
+
     // Update is called once per frame
     void Update()
     {
         TryToSpawnBomb();
+        TryToWarp();
+    }
+
+    void TryToWarp() 
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            Warp(0.5f);
+        }
+    }
+
+    // Warps the player to the enemy's position linearly based on howFar
+    // howFar = 0 --> player doesn't move
+    // howFar = 0.5 --> player warps halfway to enemy
+    // howFar = 1 --> player warps to enemy
+    void Warp(float howFar)
+    {
+        Vector2 newPosition = Vector2.Lerp(transform.position, enemyTransform.position, howFar);
+        transform.position = newPosition;
     }
 
     void TryToSpawnBomb()
