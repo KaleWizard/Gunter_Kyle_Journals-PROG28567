@@ -10,10 +10,12 @@ public class Player : MonoBehaviour
 
     [SerializeField] bool waitToSpawnBombs = false;
 
+    public Vector2 bombOffset;
+
     // Update is called once per frame
     void Update()
     {
-        TryToSpawnBomb();
+        TryToSpawnBomb(bombOffset);
         TryToWarp();
     }
 
@@ -35,19 +37,18 @@ public class Player : MonoBehaviour
         transform.position = newPosition;
     }
 
-    void TryToSpawnBomb()
+    void TryToSpawnBomb(Vector3 bombOffset)
     {
-        Vector3 bombSpawnOffset = Vector3.up;
         // Spawn a bomb above the player upon 'B' key pressed
         if (Input.GetKeyDown(KeyCode.B))
         {
             if (!waitToSpawnBombs)
             {
-                SpawnBombAtOffset(bombSpawnOffset);
+                SpawnBombAtOffset(bombOffset);
             }
             else
             {
-                StartCoroutine(WaitToSpawnBombRoutine(bombSpawnOffset));
+                StartCoroutine(WaitToSpawnBombRoutine(bombOffset));
             }
         }
     }
