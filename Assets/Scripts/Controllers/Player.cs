@@ -12,10 +12,14 @@ public class Player : MonoBehaviour
 
     public Vector2 bombOffset;
 
+    public int numberOfBombs = 3;
+    public float bombSpacing = 0.33f;
+
     // Update is called once per frame
     void Update()
     {
         TryToSpawnBomb(bombOffset);
+        TryToSpawnBombTrail(bombSpacing, numberOfBombs);
         TryToWarp();
     }
 
@@ -64,5 +68,27 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(3f);
         SpawnBombAtOffset(inOffset);
+    }
+
+    void TryToSpawnBombTrail(float bombSpacing, int numberOfBombs)
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            SpawnBombTrail(bombSpacing, numberOfBombs);
+        }
+    }
+
+    void SpawnBombTrail(float bombSpacing, int numberOfBombs)
+    {
+        // Hold local position of next bomb spawned
+        Vector2 localPos = -transform.up * bombSpacing;
+
+        // Spawn correct number of bombs
+        for (int i = 0; i < numberOfBombs; i++)
+        {
+            SpawnBombAtOffset(localPos);
+            // Increase distance for each successive bomb placement
+            localPos += -(Vector2) transform.up * bombSpacing;
+        }
     }
 }
