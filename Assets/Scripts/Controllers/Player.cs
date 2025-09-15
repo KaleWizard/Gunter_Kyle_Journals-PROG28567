@@ -23,9 +23,12 @@ public class Player : MonoBehaviour
                                     new Vector2(-1, -1).normalized,
                                     new Vector2(1, -1).normalized };
 
+    float detectionRadius = 2.5f;
+
     // Update is called once per frame
     void Update()
     {
+        DetectAsteroids(detectionRadius, asteroidTransforms);
         TryToSpawnBomb(bombOffset);
         TryToSpawnBombTrail(bombSpacing, numberOfBombs);
         TryToSpawnBombOnRandomCorner(inDistance);
@@ -114,5 +117,19 @@ public class Player : MonoBehaviour
     {
         int res = Random.Range(0, 4);
         SpawnBombAtOffset(inDistance * cornerArray[res]);
+    }
+
+    void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids)
+    {
+        foreach (Transform asteroid in inAsteroids)
+        {
+            float dist = Vector2.Distance(transform.position, asteroid.position);
+            if (dist <= inMaxRange)
+            {
+                Vector3 direction = (asteroid.position - transform.position).normalized;
+                Vector3 lineEnd = transform.position + direction * 2.5f;
+                Debug.DrawLine(transform.position, lineEnd, Color.white);
+            }
+        }
     }
 }
