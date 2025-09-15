@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
 
     public Vector2 bombOffset;
 
+    public float warpRatio = 0.5f;
+
     public int numberOfBombs = 3;
     public float bombSpacing = 0.33f;
 
@@ -34,7 +36,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            Warp(0.5f);
+            Warp(enemyTransform, warpRatio);
         }
     }
 
@@ -42,9 +44,10 @@ public class Player : MonoBehaviour
     // howFar = 0 --> player doesn't move
     // howFar = 0.5 --> player warps halfway to enemy
     // howFar = 1 --> player warps to enemy
-    void Warp(float howFar)
+    void Warp(Transform target, float ratio)
     {
-        Vector2 newPosition = Vector2.Lerp(transform.position, enemyTransform.position, howFar);
+        ratio = Mathf.Clamp(ratio, 0f, 1f);  
+        Vector2 newPosition = Vector2.Lerp(transform.position, target.position, ratio);
         transform.position = newPosition;
     }
 
