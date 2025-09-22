@@ -15,8 +15,13 @@ public class Player : MonoBehaviour
     [SerializeField] float accelTime = 0.25f;
     [SerializeField] Vector3 velocity = Vector3.zero;
 
-    [SerializeField] float accelTimer = 0f;
+    [SerializeField] float decelTime = 1f;
+
+    [SerializeField] float timer = 0f;
     [SerializeField] bool testingAcceleration = false;
+    [SerializeField] bool testingDeceleration = false;
+
+    bool decelJustPrinted = false;
 
     void Update()
     {
@@ -28,39 +33,69 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        Vector3 accelDirection = (new Vector3(horizontal, vertical)).normalized;
+        Vector3 inputDirection = (new Vector3(horizontal, vertical)).normalized;
 
-        velocity += accelDirection * (maxSpeed / accelTime) * Time.deltaTime;
+        if (inputDirection.sqrMagnitude > 0)
+        {
+            velocity += inputDirection * (maxSpeed / accelTime) * Time.deltaTime;
+        } else
+        {
+            velocity -= (velocity.normalized * maxSpeed / decelTime) * Time.deltaTime;
+        }
 
-        TestPlayerMovement(accelDirection);
+        TestPlayerAccel(inputDirection);
+        TestPlayerDecel(inputDirection);
 
-        velocity = Vector3.ClampMagnitude(velocity,  maxSpeed);
+        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
         transform.position += velocity * Time.deltaTime;
 
         
     }
 
-    void TestPlayerMovement(Vector2 playerInput)
+    void TestPlayerAccel(Vector2 playerInput)
     {
         if (!testingAcceleration) return;
 
         if (playerInput.x != 0 || playerInput.y != 0)
         {
-            accelTimer += Time.deltaTime;
+            timer += Time.deltaTime;
         }
         else
         {
-            accelTimer = 0;
+            timer = 0;
             velocity = Vector3.zero;
         }
 
         if (velocity.magnitude > maxSpeed)
         {
             Debug.Log("Velocity Reached: " + velocity.magnitude.ToString() +
-                      "\nTime Taken: " + accelTimer.ToString());
+                      "\nTime Taken: " + timer.ToString());
             velocity = Vector3.zero;
-            accelTimer = 0;
+            timer = 0;
+        }
+    }
+
+    void TestPlayerDecel(Vector2 playerInput)
+    {
+        if (!testingDeceleration) return;
+
+        const float minimumSpeed = 0.01f;
+
+        if (playerInput.sqrMagnitude > 0f)
+        {
+            timer = 0f;
+            decelJustPrinted = false;
+        } else
+        {
+            timer += Time.deltaTime;
+        }
+        if (velocity.magnitude < minimumSpeed && !decelJustPrinted)
+        {
+            Debug.Log("Velocity Reached: " + velocity.magnitude.ToString() +
+                      "\nTime Taken: " + timer.ToString());
+            timer = 0;
+            decelJustPrinted = true;
         }
     }
 }
