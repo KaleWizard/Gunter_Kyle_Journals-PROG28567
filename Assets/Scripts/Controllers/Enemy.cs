@@ -6,8 +6,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] Transform playerTransform;
 
     // Idle state detection angle and distance
-    [SerializeField] float detectionAngle;
-    [SerializeField] float detectionDist;
+    [SerializeField] float detectionAngle = 30f;
+    [SerializeField] float detectionDist = 3f;
 
     // Idle state point the enemy is wandering to
     // and distance from point to consider enemy "arrived"
@@ -15,11 +15,13 @@ public class Enemy : MonoBehaviour
     [SerializeField] float targetDistance = 0.25f;
 
     // Seeking state sight angle and distance
-    [SerializeField] float sightAngle;
-    [SerializeField] float sightDist;
+    [SerializeField] float sightAngle = 35f;
+    [SerializeField] float sightDist = 3.5f;
 
     // Enemy stats
-    [SerializeField] float speed = 4f;
+    [SerializeField] float speed = 3f;
+    [SerializeField] float angularSpeedSeeking = 20f;
+    [SerializeField] float angularSpeedIdle = 15f;
 
     // Enemy's current state
     EnemyState state = EnemyState.Idle;
@@ -54,7 +56,7 @@ public class Enemy : MonoBehaviour
             ChooseNewWanderPoint();
         }
         // Turn towards the current point
-        TurnToPoint(wanderPoint);
+        TurnToPoint(wanderPoint, angularSpeedIdle);
         // Move towards the current point
         MoveForwards();
         // Check if player is within detection range
@@ -68,7 +70,7 @@ public class Enemy : MonoBehaviour
     void SeekingMovement()
     {
         // Turn towards the player
-        TurnToPoint(playerTransform.position);
+        TurnToPoint(playerTransform.position, angularSpeedSeeking);
         // Move fowards
         MoveForwards();
         // Check if player is within sight range
@@ -76,12 +78,26 @@ public class Enemy : MonoBehaviour
         if (PlayerInRange(sightAngle, sightDist))
         {
             state = EnemyState.Idle;
+            ChooseNewWanderPoint();
         }
     }
 
-    void TurnToPoint(Vector3 point)
+    void TurnToPoint(Vector3 target, float angularSpeed)
     {
+        // Get direction from enemy to target
+        Vector3 targetDirection = (target - transform.position).normalized;
 
+        // Detect direction to rotate
+        // Get dot product of direction to target and transform.right
+        // if result is < 0, rotate clockwise, else rotate counter-clockwise
+        float det = Vector3.Dot(targetDirection, transform.right.normalized);
+        float rotationDirection = det < 0? 1 : -1;
+
+        Vector3 rotation = transform.eulerAngles;
+
+        rotation.z += rotationDirection * angularSpeed * Time.deltaTime;
+
+        transform.eulerAngles = rotation;
     }
 
     void MoveForwards()
@@ -101,12 +117,6 @@ public class Enemy : MonoBehaviour
         // Detect if the enemy is facing the player (within angle / 2 degrees
         bool isWithinAngle = Vector3.Angle(transform.up, playerDirection) < angle / 2;
         return isPlayerClose && isWithinAngle;
-    }
-
-    // Returns true if p1 and p2 are less than distance units apart
-    bool PointNearPoint(Vector3 p1,  Vector3 p2, float distance)
-    {
-        return Vector3.Distance(p1, p2) < distance;
     }
 
     // Returns true if enemy is within distance units of point
