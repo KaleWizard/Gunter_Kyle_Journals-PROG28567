@@ -50,6 +50,8 @@ public class Enemy : MonoBehaviour
 
     void IdleMovement()
     {
+        DisplaySearchRange(detectionAngle, detectionDist, Color.white);
+
         // Pick a new point if close enough to the current point
         if (NearPoint(wanderPoint, targetDistance))
         {
@@ -69,13 +71,14 @@ public class Enemy : MonoBehaviour
 
     void SeekingMovement()
     {
+        DisplaySearchRange(sightAngle, sightDist, Color.red);
         // Turn towards the player
         TurnToPoint(playerTransform.position, angularSpeedSeeking);
         // Move fowards
         MoveForwards();
         // Check if player is within sight range
         // If not, switch to idle state
-        if (PlayerInRange(sightAngle, sightDist))
+        if (!PlayerInRange(sightAngle, sightDist))
         {
             state = EnemyState.Idle;
             ChooseNewWanderPoint();
@@ -110,13 +113,12 @@ public class Enemy : MonoBehaviour
     // based on enemy's facing direction (transform.up)
     bool PlayerInRange(float angle, float distance)
     {
-        // Detect if player is close enough to the enemy
-        bool isPlayerClose = Vector3.Distance(transform.position, playerTransform.position) < distance;
+        // Detect if the enemy is facing the player (within angle/2 degrees)
         Vector3 playerDirection = playerTransform.position - transform.position;
-
-        // Detect if the enemy is facing the player (within angle / 2 degrees
         bool isWithinAngle = Vector3.Angle(transform.up, playerDirection) < angle / 2;
-        return isPlayerClose && isWithinAngle;
+
+        // Detect if player is close enough to be detected
+        return NearPoint(playerTransform.position, distance) && isWithinAngle;
     }
 
     // Returns true if enemy is within distance units of point
@@ -137,5 +139,39 @@ public class Enemy : MonoBehaviour
 
         // Update new wander point
         wanderPoint = new Vector2(randX, randY);
+    }
+
+    void DisplaySearchRange(float angle, float distance, Color c)
+    {
+        float sinTheta = Mathf.Sin(Mathf.Deg2Rad * angle / 2);
+        float cosTheta = Mathf.Cos(Mathf.Deg2Rad * angle / 2);
+
+        float x = transform.up.x;
+        float y = transform.up.y;
+
+        // Draw lines on sides of vision cone
+        Vector3 direction = new Vector3 (x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        direction = direction.normalized * distance;
+        Debug.DrawLine(transform.position, transform.position + direction, c);
+
+        direction = new Vector3(x * cosTheta + y * sinTheta, y * cosTheta - x * sinTheta);
+        direction = direction.normalized * distance;
+        Debug.DrawLine(transform.position, transform.position + direction, c);
+
+
+        // Draw lines for arc of vision cone
+        float runningAngle = Mathf.Atan2(direction.y, direction.x);
+        Vector3 lastPoint = transform.position + new Vector3(Mathf.Cos(runningAngle), Mathf.Sin(runningAngle)) * distance;
+        Vector3 currentPoint;
+        int arcSegments = 8;
+
+        for (int i = 1; i < arcSegments; i++)
+        {
+            runningAngle += Mathf.Deg2Rad * angle / (arcSegments - 1);
+            currentPoint = transform.position + new Vector3(Mathf.Cos(runningAngle), Mathf.Sin(runningAngle)) * distance;
+            Debug.DrawLine(lastPoint, currentPoint, c);
+            lastPoint = currentPoint;
+        }
+
     }
 }
