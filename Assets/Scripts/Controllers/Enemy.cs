@@ -26,6 +26,10 @@ public class Enemy : MonoBehaviour
     // Enemy's current state
     EnemyState state = EnemyState.Idle;
 
+    // EnemyRadar stats
+    [SerializeField] float circleRadius = 10;
+    [SerializeField] int circlePoints = 10;
+
     enum EnemyState
     {
         Idle = 0,
@@ -35,6 +39,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         EnemyMovement();
+        EnemyRadar(circleRadius, circlePoints);
     }
 
     void EnemyMovement()
@@ -173,5 +178,26 @@ public class Enemy : MonoBehaviour
             lastPoint = currentPoint;
         }
 
+    }
+
+    void EnemyRadar(float radius, int circlePoints)
+    {
+        // Get initial angle and change in angle
+        float theta = 0f;
+        float delta = 2 * Mathf.PI / circlePoints;
+
+        // Get radar colour
+        Color color = NearPoint(playerTransform.position, radius) ? Color.red : Color.green;
+
+        // Drawn lines around circle's points
+        for (int i = 0; i < circlePoints; i++)
+        {
+            Vector3 start = new Vector2(Mathf.Sin(theta), Mathf.Cos(theta)) * radius;
+            Vector3 end = new Vector2(Mathf.Sin(theta + delta), Mathf.Cos(theta + delta)) * radius;
+
+            Debug.DrawLine(transform.position + start, transform.position + end, color);
+
+            theta += delta;
+        }
     }
 }

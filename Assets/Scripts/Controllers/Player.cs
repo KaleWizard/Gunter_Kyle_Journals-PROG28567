@@ -23,9 +23,16 @@ public class Player : MonoBehaviour
 
     bool decelJustPrinted = false;
 
+    // Powerup stats
+    [SerializeField] GameObject powerupPrefab;
+
+    [SerializeField] float powerupRadius = 3f;
+    [SerializeField] int numberOfPowerups = 5;
+
     void Update()
     {
         PlayerMovement();
+        TryToSpawnPowerups(powerupRadius, numberOfPowerups);
     }
 
     void PlayerMovement()
@@ -96,6 +103,31 @@ public class Player : MonoBehaviour
                       "\nTime Taken: " + timer.ToString());
             timer = 0;
             decelJustPrinted = true;
+        }
+    }
+
+    void TryToSpawnPowerups(float radius, int numberOfPowerups)
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            SpawnPowerups(radius, numberOfPowerups);
+        }
+    }
+
+    void SpawnPowerups(float radius, int numberOfPowerups)
+    {
+        // Get initial angle and change in angle
+        float theta = 0f;
+        float delta = 2 * Mathf.PI / numberOfPowerups;
+
+        // Spawn powerups around player
+        for (int i = 0; i < numberOfPowerups; i++)
+        {
+            Vector3 spawnpoint = new Vector2(Mathf.Sin(theta), Mathf.Cos(theta)) * radius;
+
+            Instantiate(powerupPrefab, transform.position + spawnpoint, Quaternion.identity);
+
+            theta += delta;
         }
     }
 }
