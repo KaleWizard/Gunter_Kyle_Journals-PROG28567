@@ -19,9 +19,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] float sightDist = 3.5f;
 
     // Enemy stats
-    [SerializeField] float speed = 3f;
     [SerializeField] float angularSpeedSeeking = 20f;
     [SerializeField] float angularSpeedIdle = 15f;
+
+    [SerializeField] float maxSpeed = 5f;
+
+    [SerializeField] float accelTime = 0.25f;
+    [SerializeField] Vector3 velocity = Vector3.zero;
+
+    [SerializeField] float decelTime = 1f;
 
     // Enemy's current state
     EnemyState state = EnemyState.Idle;
@@ -30,10 +36,16 @@ public class Enemy : MonoBehaviour
     [SerializeField] float circleRadius = 10;
     [SerializeField] int circlePoints = 10;
 
+    // OrbitGroup variables
+    public EnemyOrbitGroup orbitController = null;
+    public Enemy leftEnemy = null;
+    public Enemy rightEnemy = null;
+
     enum EnemyState
     {
         Idle = 0,
-        Seeking = 1
+        Seeking = 1,
+        InOrbitGroup = 2
     }
 
     void Update()
@@ -50,6 +62,9 @@ public class Enemy : MonoBehaviour
         } else if (state == EnemyState.Seeking)
         {
             SeekingMovement();
+        } else if (state == EnemyState.InOrbitGroup)
+        {
+            OrbitMovement();
         }
     }
 
@@ -72,6 +87,10 @@ public class Enemy : MonoBehaviour
         {
             state = EnemyState.Seeking;
         }
+        if (orbitController != null)
+        {
+            state = EnemyState.InOrbitGroup;
+        }
     }
 
     void SeekingMovement()
@@ -87,6 +106,41 @@ public class Enemy : MonoBehaviour
         {
             state = EnemyState.Idle;
             ChooseNewWanderPoint();
+            orbitController = null;
+        }
+    }
+
+    void OrbitMovement()
+    {
+        // Find direction and distance between self and orbitPoint
+        Vector3 direction = transform.position - orbitController.orbitPoint;
+        float dist = direction.magnitude;
+        direction.Normalize();
+
+        // Increase velocity towards correct distance from orbitPoint
+        Vector3 target = orbitController.orbitPoint + direction * orbitController.orbitDistance;
+        MoveTowards(target, orbitController.orbitmaxSpeed, accelTime);
+
+        float leftDist = Vector2.Distance(transform.position, leftEnemy.transform.position);
+        float rightDist = Vector2.Distance(transform.position, rightEnemy.transform.position);
+        if (rightDist > leftDist)
+        {
+            // Get tangential movement vector
+            Vector3 directionPerp = new Vector3(direction.y, -direction.x);
+            velocity += direction * (orbitController.orbitmaxSpeed / accelTime) * Time.deltaTime;
+        }
+
+        // Update position
+        UpdatePosition();
+
+        // Turn enemy away from orbit point
+        TurnToPoint(transform.position + direction, 90f);
+
+        // State transition
+        if (PlayerInRange(detectionAngle, detectionDist))
+        {
+            state = EnemyState.Seeking;
+            orbitController = null;
         }
     }
 
@@ -108,10 +162,26 @@ public class Enemy : MonoBehaviour
         transform.eulerAngles = rotation;
     }
 
+    void MoveTowards(Vector3 point, float maxSpeed, float accelTime)
+    {
+        Vector3 direction = (point - transform.position).normalized;
+        velocity += direction * (maxSpeed / accelTime) * Time.deltaTime;
+    }
+
     void MoveForwards()
     {
-        // Move enemy in the direction they're facing
-        transform.position += transform.up.normalized * speed * Time.deltaTime;
+        velocity += transform.up.normalized * (maxSpeed / accelTime) * Time.deltaTime;
+        UpdatePosition();
+    }
+
+    void UpdatePosition()
+    {
+        // Ensure velocity is within correct parameters
+        velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
+        // Update position
+        transform.position += velocity * Time.deltaTime;
+        // Apply deceleration
+        velocity -= (velocity.normalized * maxSpeed / decelTime) * Time.deltaTime;
     }
 
     // Detects if player is within the given angle and distance
