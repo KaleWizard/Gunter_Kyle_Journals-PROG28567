@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Player : MonoBehaviour
 {
@@ -11,6 +10,7 @@ public class Player : MonoBehaviour
     public Transform bombsTransform;
 
     [SerializeField] float maxSpeed = 5f;
+    [SerializeField] float maxAngularSpeed = 180;
 
     [SerializeField] float accelTime = 0.25f;
     [SerializeField] Vector3 velocity = Vector3.zero;
@@ -42,9 +42,11 @@ public class Player : MonoBehaviour
 
         Vector3 inputDirection = (new Vector3(horizontal, vertical)).normalized;
 
+        TurnToPoint(transform.position + inputDirection, maxAngularSpeed); 
+
         if (inputDirection.sqrMagnitude > 0)
         {
-            velocity += inputDirection * (maxSpeed / accelTime) * Time.deltaTime;
+            velocity += transform.up.normalized * (maxSpeed / accelTime) * Time.deltaTime;
         } else
         {
             velocity -= (velocity.normalized * maxSpeed / decelTime) * Time.deltaTime;
@@ -56,8 +58,6 @@ public class Player : MonoBehaviour
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
         transform.position += velocity * Time.deltaTime;
-
-        
     }
 
     void TestPlayerAccel(Vector2 playerInput)
@@ -129,5 +129,23 @@ public class Player : MonoBehaviour
 
             theta += delta;
         }
+    }
+
+    void TurnToPoint(Vector3 target, float angularSpeed)
+    {
+        // Get direction from enemy to target
+        Vector3 targetDirection = (target - transform.position).normalized;
+
+        // Detect direction to rotate
+        // Get dot product of direction to target and transform.right
+        // if result is < 0, rotate clockwise, else rotate counter-clockwise
+        float det = Vector3.Dot(targetDirection, transform.right.normalized);
+        float rotationDirection = det < 0 ? 1 : -1;
+
+        Vector3 rotation = transform.eulerAngles;
+
+        rotation.z += rotationDirection * angularSpeed * Time.deltaTime;
+
+        transform.eulerAngles = rotation;
     }
 }
