@@ -41,6 +41,8 @@ public class Enemy : MonoBehaviour
     public Enemy leftEnemy = null;
     public Enemy rightEnemy = null;
 
+    [SerializeField] bool showRanges = false;
+
     enum EnemyState
     {
         Idle = 0,
@@ -218,6 +220,8 @@ public class Enemy : MonoBehaviour
 
     void DisplaySearchRange(float angle, float distance, Color c)
     {
+        if (!showRanges) return;
+
         float sinTheta = Mathf.Sin(Mathf.Deg2Rad * angle / 2);
         float cosTheta = Mathf.Cos(Mathf.Deg2Rad * angle / 2);
 
@@ -252,6 +256,8 @@ public class Enemy : MonoBehaviour
 
     void EnemyRadar(float radius, int circlePoints)
     {
+        if (!showRanges) return;
+
         // Get initial angle and change in angle
         float theta = 0f;
         float delta = 2 * Mathf.PI / circlePoints;
