@@ -42,10 +42,10 @@ public class Player : MonoBehaviour
 
         Vector3 inputDirection = (new Vector3(horizontal, vertical)).normalized;
 
-        TurnToPoint(transform.position + inputDirection, maxAngularSpeed); 
 
         if (inputDirection.sqrMagnitude > 0)
         {
+            TurnToPoint(transform.position + inputDirection, maxAngularSpeed);
             velocity += transform.up.normalized * (maxSpeed / accelTime) * Time.deltaTime;
         } else
         {

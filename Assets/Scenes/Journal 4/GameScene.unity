@@ -1751,7 +1751,7 @@ MonoBehaviour:
   - {x: -4, y: -1, z: 5}
   - {x: 4, y: -2, z: 2}
   showField: 1
-  circlePoints: 8
+  circlePoints: 76
 --- !u!4 &1945259206
 Transform:
   m_ObjectHideFlags: 0

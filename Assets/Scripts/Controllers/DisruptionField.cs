@@ -64,7 +64,9 @@ public class DisruptionField : MonoBehaviour
     {
         foreach (Vector3 zone in ranges)
         {
-            if (Vector2.Distance(zone, ship.position) < zone.z)
+            Vector2 zoneCenter = (Vector2) transform.position + Vector2Math.Rotate(zone, transform.eulerAngles.z * Mathf.Deg2Rad);
+
+            if (Vector2.Distance(zoneCenter, ship.position) < zone.z)
             {
                 return true;
             }
@@ -82,13 +84,15 @@ public class DisruptionField : MonoBehaviour
             float theta = 0f;
             float delta = 2 * Mathf.PI / circlePoints;
 
+            Vector3 zoneCenter = (Vector2)transform.position + Vector2Math.Rotate(zone, transform.eulerAngles.z * Mathf.Deg2Rad);
+
             // Drawn lines around circle's points
             for (int i = 0; i < circlePoints; i++)
             {
                 Vector3 start = new Vector2(Mathf.Sin(theta), Mathf.Cos(theta)) * zone.z;
                 Vector3 end = new Vector2(Mathf.Sin(theta + delta), Mathf.Cos(theta + delta)) * zone.z;
 
-                Debug.DrawLine(zone + start, zone + end, Color.white);
+                Debug.DrawLine(zoneCenter + start, zoneCenter + end, Color.white);
 
                 theta += delta;
             }
