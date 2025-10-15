@@ -1752,6 +1752,7 @@ MonoBehaviour:
   - {x: 4, y: -2, z: 2}
   showField: 1
   circlePoints: 76
+  fieldCirclePrefab: {fileID: 7642677419573053094, guid: 43b04e15ace876549acb9ce9ce7e938c, type: 3}
 --- !u!4 &1945259206
 Transform:
   m_ObjectHideFlags: 0
