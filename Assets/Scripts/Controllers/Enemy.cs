@@ -111,6 +111,10 @@ public class Enemy : MonoBehaviour
             ChooseNewWanderPoint();
             orbitController = null;
         }
+        if (orbitController != null)
+        {
+            orbitController.RemoveShip(this);
+        }
     }
 
     void OrbitMovement()

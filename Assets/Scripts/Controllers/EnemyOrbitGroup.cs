@@ -9,6 +9,8 @@ public class EnemyOrbitGroup : MonoBehaviour
     public List<Enemy> orbitingEnemies;
     [SerializeField] EnemyRegister enemyRegister;
 
+    [SerializeField] float joinDistance = 2;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -37,7 +39,64 @@ public class EnemyOrbitGroup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        AddShips();
+    }
+
+    void AddShips()
+    {
+        foreach (Enemy enemy in enemyRegister.enemies)
+        {
+            if (Vector2.Distance(orbitPoint, enemy.transform.position) < joinDistance
+                && !orbitingEnemies.Contains(enemy))
+            {
+                AddShip(enemy);
+            }
+        }
+    }
+
+    void AddShip(Enemy enemy)
+    {
+        if (orbitingEnemies.Count == 0)
+        {
+            orbitingEnemies.Add(enemy);
+            enemy.leftEnemy = enemy.rightEnemy = enemy;
+            enemy.orbitController = this;
+            return;
+        }
+        int insertionIndex = 0;
+        float shortestDistance = Vector2.Distance(enemy.transform.position, orbitingEnemies[0].transform.position);
+        for (int i = 1; i < orbitingEnemies.Count; i++)
+        {
+            float nextDist = Vector2.Distance(enemy.transform.position, orbitingEnemies[i].transform.position);
+            if (nextDist < shortestDistance)
+            {
+                shortestDistance = nextDist;
+                insertionIndex = i;
+            }
+        }
+        Enemy closestEnemy = orbitingEnemies[insertionIndex];
+
+        float prevDistance = Vector2.Distance(enemy.transform.position, closestEnemy.leftEnemy.transform.position);
+        float nextDistance = Vector2.Distance(enemy.transform.position, closestEnemy.rightEnemy.transform.position);
+
+        Enemy prevEnemy;
+        Enemy nextEnemy;
+
+        if (prevDistance < nextDistance)
+        {
+            prevEnemy = closestEnemy.leftEnemy;
+            nextEnemy = closestEnemy;
+        } else
+        {
+            prevEnemy = closestEnemy;
+            nextEnemy = closestEnemy.rightEnemy;
+        }
+        orbitingEnemies.Add(enemy);
+
+        prevEnemy.rightEnemy = nextEnemy.leftEnemy = enemy;
+        enemy.leftEnemy = prevEnemy;
+        enemy.rightEnemy = nextEnemy;
+        enemy.orbitController = this;
     }
 
     public void RemoveShip(Enemy enemy)
