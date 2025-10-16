@@ -45,6 +45,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed2e3d81b6305a4781854e2db082af9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  detectionAngle: 90
+  detectionDist: 8
+  targetDistance: 0.25
+  sightAngle: 105
+  sightDist: 10
+  angularSpeedSeeking: 120
+  angularSpeedIdle: 90
+  maxSpeed: 5
+  accelTime: 0.25
+  velocity: {x: 0, y: 0, z: 0}
+  decelTime: 1
+  circleRadius: 10
+  circlePoints: 10
+  orbitController: {fileID: 0}
+  leftEnemy: {fileID: 0}
+  rightEnemy: {fileID: 0}
+  showRanges: 0
 --- !u!1 &1957684609019034
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,6 +112,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

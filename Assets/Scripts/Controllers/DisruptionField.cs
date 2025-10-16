@@ -71,7 +71,7 @@ public class DisruptionField : MonoBehaviour
     {
         foreach (Vector3 zone in ranges)
         {
-            Vector2 zoneCenter = GetCenter(zone);
+            Vector2 zoneCenter = transform.position + GetLocalCenter(zone);
 
             if (Vector2.Distance(zoneCenter, ship.position) < zone.z)
             {
@@ -85,7 +85,7 @@ public class DisruptionField : MonoBehaviour
     {
         foreach (Vector3 zone in ranges)
         {
-            Vector3 zoneCenter = GetCenter(zone);
+            Vector3 zoneCenter = GetLocalCenter(zone);
             GameObject newCircle = Instantiate(fieldCirclePrefab, transform);
             newCircle.transform.localPosition = zoneCenter;
             newCircle.transform.localScale = Vector3.one * zone.z;
@@ -102,7 +102,7 @@ public class DisruptionField : MonoBehaviour
             float theta = 0f;
             float delta = 2 * Mathf.PI / circlePoints;
 
-            Vector3 zoneCenter = GetCenter(zone);
+            Vector3 zoneCenter = transform.position + GetLocalCenter(zone);
 
             // Drawn lines around circle's points
             for (int i = 0; i < circlePoints; i++)
@@ -117,8 +117,8 @@ public class DisruptionField : MonoBehaviour
         }
     }
 
-    Vector3 GetCenter(Vector3 zone)
+    Vector3 GetLocalCenter(Vector3 zone)
     {
-        return (Vector2)transform.position + Vector2Math.Rotate(zone, transform.eulerAngles.z * Mathf.Deg2Rad);
+        return Vector2Math.Rotate(zone, transform.eulerAngles.z * Mathf.Deg2Rad);
     }
 }

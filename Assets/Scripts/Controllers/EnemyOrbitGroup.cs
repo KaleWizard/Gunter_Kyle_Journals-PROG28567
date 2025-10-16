@@ -39,4 +39,18 @@ public class EnemyOrbitGroup : MonoBehaviour
     {
         
     }
+
+    public void RemoveShip(Enemy enemy)
+    {
+        // If enemy's right is itself, then it's the only ship in the orbitGroup
+        // In this case the ship only needs to be removed from the orbit list
+        if (enemy.rightEnemy != enemy)
+        {
+            enemy.rightEnemy.leftEnemy = enemy.leftEnemy;
+            enemy.leftEnemy.rightEnemy = enemy.rightEnemy;
+        }
+        enemy.rightEnemy = enemy.leftEnemy = null;
+        enemy.orbitController = null;
+        orbitingEnemies.Remove(enemy);
+    }
 }

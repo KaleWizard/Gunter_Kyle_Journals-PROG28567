@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     // Enemy stats
     [SerializeField] float angularSpeedSeeking = 20f;
     [SerializeField] float angularSpeedIdle = 15f;
+    [SerializeField] float angularSpeedOrbit = 150f;
 
     [SerializeField] float maxSpeed = 5f;
 
@@ -115,9 +116,7 @@ public class Enemy : MonoBehaviour
     void OrbitMovement()
     {
         // Find direction and distance between self and orbitPoint
-        Vector3 direction = transform.position - orbitController.orbitPoint;
-        float dist = direction.magnitude;
-        direction.Normalize();
+        Vector3 direction = (transform.position - orbitController.orbitPoint).normalized;
 
         // Increase velocity towards correct distance from orbitPoint
         Vector3 target = orbitController.orbitPoint + direction * orbitController.orbitDistance;
@@ -125,24 +124,24 @@ public class Enemy : MonoBehaviour
 
         float leftDist = Vector2.Distance(transform.position, leftEnemy.transform.position);
         float rightDist = Vector2.Distance(transform.position, rightEnemy.transform.position);
-        if (rightDist > leftDist)
+        if (rightDist >= leftDist)
         {
             // Get tangential movement vector
             Vector3 directionPerp = new Vector3(direction.y, -direction.x);
-            velocity += direction * (orbitController.orbitmaxSpeed / accelTime) * Time.deltaTime;
+            MoveTowards(transform.position + directionPerp, orbitController.orbitmaxSpeed, accelTime);
         }
 
         // Update position
         UpdatePosition();
 
         // Turn enemy away from orbit point
-        TurnToPoint(transform.position + direction, 90f);
+        TurnToPoint(transform.position + direction, angularSpeedOrbit);
 
         // State transition
         if (PlayerInRange(detectionAngle, detectionDist))
         {
             state = EnemyState.Seeking;
-            orbitController = null;
+            orbitController.RemoveShip(this);
         }
     }
 
