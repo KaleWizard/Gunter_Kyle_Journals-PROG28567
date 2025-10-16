@@ -11,6 +11,10 @@ public class EnemyOrbitGroup : MonoBehaviour
 
     [SerializeField] float joinDistance = 2;
 
+    [SerializeField] GameObject enemyPrefab;
+    [SerializeField] Transform playerTransform;
+    [SerializeField] int initialEnemyCount = 4;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,6 +38,8 @@ public class EnemyOrbitGroup : MonoBehaviour
         {
             orbitingEnemies[i].orbitController = this;
         }
+
+        SpawnInitialEnemies();
     }
 
     // Update is called once per frame
@@ -111,5 +117,27 @@ public class EnemyOrbitGroup : MonoBehaviour
         enemy.rightEnemy = enemy.leftEnemy = null;
         enemy.orbitController = null;
         orbitingEnemies.Remove(enemy);
+    }
+
+    void SpawnInitialEnemies()
+    {
+        // Get initial angle and change in angle
+        float theta = 0f;
+        float delta = 2 * Mathf.PI / initialEnemyCount;
+
+        // Drawn lines around circle's points
+        for (int i = 0; i < initialEnemyCount; i++)
+        {
+            Vector3 spawnpoint = new Vector3(Mathf.Sin(theta), Mathf.Cos(theta)) * orbitDistance + orbitPoint;
+
+            Enemy newEnemy = Instantiate(enemyPrefab, spawnpoint, Quaternion.identity).GetComponent<Enemy>();
+            AddShip(newEnemy);
+            enemyRegister.enemies.Add(newEnemy);
+
+            newEnemy.transform.up = spawnpoint - orbitPoint;
+            newEnemy.playerTransform = playerTransform;
+
+            theta += delta;
+        }
     }
 }

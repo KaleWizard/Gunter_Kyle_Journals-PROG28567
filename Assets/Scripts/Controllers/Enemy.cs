@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] Transform playerTransform;
+    public Transform playerTransform;
 
     // Idle state detection angle and distance
     [SerializeField] float detectionAngle = 30f;
