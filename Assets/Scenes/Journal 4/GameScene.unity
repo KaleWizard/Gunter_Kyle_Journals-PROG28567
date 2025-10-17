@@ -1045,6 +1045,9 @@ MonoBehaviour:
   - {fileID: 753311784}
   enemyRegister: {fileID: 1022935986}
   joinDistance: 2
+  enemyPrefab: {fileID: 1409900303673908, guid: e3900e4d87ee29c43ad1d9098b51432c, type: 3}
+  playerTransform: {fileID: 1063494576}
+  initialEnemyCount: 4
 --- !u!4 &1097705754
 Transform:
   m_ObjectHideFlags: 0

@@ -84,6 +84,10 @@ public class Enemy : MonoBehaviour
         TurnToPoint(wanderPoint, angularSpeedIdle);
         // Move towards the current point
         MoveForwards();
+
+        // Draw line from self to target
+        Debug.DrawLine(transform.position, wanderPoint);
+
         // Check if player is within detection range
         // If so, switch to seeking state
         if (PlayerInRange(detectionAngle, detectionDist))
